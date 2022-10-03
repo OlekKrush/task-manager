@@ -1,0 +1,8 @@
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tmdb
+    username: postgres
+    password: password
