@@ -1,5 +1,7 @@
 package com.pet.taskmanager;
 
+import com.pet.taskmanager.dto.ProjectDTO;
+
 import java.util.List;
 
 public interface CRUD<T, U> {

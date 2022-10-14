@@ -27,21 +27,33 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO update(ProjectDTO projectDTO) {
-        return null;
+        Project project = mapper.toEntity(projectDTO);
+        Project result = dao.update(project);
+        return mapper.toDTO(result);
+
     }
 
     @Override
     public ProjectDTO findOneById(String id) {
-        return null;
+        Project oneById = dao.findOneById(id);
+        return mapper.toDTO(oneById);
     }
 
     @Override
     public void delete(String id) {
-
+        dao.delete(id);
     }
 
     @Override
     public List<ProjectDTO> findAll() {
-        return null;
+        return dao
+                .findAll()
+                .stream()
+                .map(mapper::toDTO)
+                .toList();
+//        List<Project> projectList = dao.findAll();
+//        List<ProjectDTO> projectDTOList = new ArrayList<>();
+//        projectList.forEach(project -> projectDTOList.add(mapper.toDTO(project)));
+//        return projectDTOList;
     }
 }

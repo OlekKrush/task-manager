@@ -6,6 +6,7 @@ import com.pet.taskmanager.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,12 @@ public class ProjectControllerImpl implements ProjectController {
 //        return new ProjectDTO("test-id","test-name", "test-key", "test-lead", true, "test-img"  );
     }
 
+    @Override
+    public ProjectDTO update(ProjectDTO projectDTO) {
+        return null;
+    }
+
+
 //    @PostMapping(value = "/jopka")
 //    @ResponseStatus(code = HttpStatus.CREATED)
 //    public ProjectDTO createJopka(@RequestBody ProjectDTO projectDTO) {
@@ -33,24 +40,30 @@ public class ProjectControllerImpl implements ProjectController {
 //        return new ProjectDTO("test-id", "test-name", "test-key", "test-lead", true, "test-img");
 //    }
 
-    @Override
     @PutMapping(value = "/{id}")
-    public ProjectDTO update(@RequestBody ProjectDTO projectDTO) {
-        return null;
+    @ResponseStatus(code = HttpStatus.OK)
+    public ProjectDTO update(RequestEntity<ProjectDTO> entity) {
+        System.out.println(entity);
+        return service.update(entity.getBody());
     }
 
     @Override
-    public ProjectDTO findOneById(String id) {
-        return null;
+    @GetMapping(value = "/{id}")
+    public ProjectDTO findOneById(@PathVariable String id) {
+        return service.findOneById(id);
     }
 
     @Override
-    public void delete(String id) {
-
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable String id) {
+        service.delete(id);
     }
 
     @Override
+    @RequestMapping(method = RequestMethod.GET)
     public List<ProjectDTO> findAll() {
-        return null;
+        return service.findAll();
     }
+
 }
