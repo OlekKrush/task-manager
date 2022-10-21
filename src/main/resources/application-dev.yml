@@ -1,0 +1,13 @@
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tmdb
+    username: postgres
+    password: password
+
+logging:
+  config: classpath:log4j2-dev.xml
+  file:
+    name: logs/NBUConstructor.log

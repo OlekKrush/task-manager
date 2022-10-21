@@ -1,0 +1,4 @@
+logging:
+  config: classpath:log4j2-prod.xml
+  file:
+    name: logs/NBUConstructor.log
