@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -37,6 +38,7 @@ public class UserProfileDAOImpl implements UserProfileDAO<UserProfile> {
     @Override
     @Transactional
     public void createUser(UserDetails user) {
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         final String SQL = """
                 insert into user_details (sub, email, password) values (?,?,?)
                 """;
@@ -46,7 +48,7 @@ public class UserProfileDAOImpl implements UserProfileDAO<UserProfile> {
             jdbc.update(SQL,
                     sub,
                     user.getUsername(),
-                    user.getPassword());
+                    encoder.encode(user.getPassword()));
             urService.add(sub, 1);
             urService.add(sub, 3);
         } catch (DataAccessException e) {
@@ -134,28 +136,28 @@ public class UserProfileDAOImpl implements UserProfileDAO<UserProfile> {
                 on ud.sub = up.sub
                 where ud.email =  ?""";
         try {
-            return jdbc.queryForObject(SQL, (rs, rowNum) -> {
-
-                while(rs.next()) {
-                     System.out.println("SDFSDFSDF");
-                    //TODO Fix: implement get roles
-                    Set<Role> roles = urService.getRolesByUsername(username);
-                    List<? extends GrantedAuthority> authorities
-                            = roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).toList();
-                    return new UserProfile(
-                            rs.getString("EMAIL"),
-                            rs.getString("PASSWORD"),
-                            authorities,
-                            rs.getString("SUB"),
-                            rs.getString("FAMILY_NAME"),
-                            rs.getString("GIVEN_NAME"),
-                            rs.getString("PICTURE")
-                    );
-                    throw new UsernameNotFoundException("User cannot be found.");
-                }
-
-
+            UserProfile userProfile = jdbc.queryForObject(SQL, (rs, rowNum) -> {
+                // Set<Role> roles = urService.getRolesByUsername(username);
+                Set<Role> roles = new HashSet<>();
+                roles.add(Role.USER);
+                roles.add(Role.CREATOR);
+                List<? extends GrantedAuthority> authorities
+                        = roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).toList();
+                return new UserProfile(
+                        rs.getString("EMAIL"),
+                        rs.getString("PASSWORD"),
+                        authorities,
+                        rs.getString("SUB"),
+                        rs.getString("FAMILY_NAME"),
+                        rs.getString("GIVEN_NAME"),
+                        rs.getString("PICTURE")
+                );
             }, username);
+
+            if (userProfile == null) {
+                throw new UsernameNotFoundException("User cannot be found.");
+            }
+            return userProfile;
         } catch (DataAccessException e) {
             throw new CustomException("User cannot be found.");
         }
